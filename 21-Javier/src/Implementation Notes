@@ -1,0 +1,28 @@
+Wed. 3/5/2014
+
+Refactored-Renamed all classes except CardDeck and Card, removing "TwentyOne"
+
+Controller class
+
+	Added public static int	MAX_NUMBER_OF_PLAYERS = 5;
+
+Card class
+
+	Added toString()
+	
+	Removed public static final int JOKER = 0;
+	
+	Modified constructor method to reference CardDeck.Joker
+	
+	Modified comment for isValid method
+
+CardDeck class
+
+	Added public static final int JOKER = 0;
+	
+TwentyOneTestCardDeck class:
+
+	testCardDeck()
+	
+		Removed switch/case statement with call to card.toString()
+

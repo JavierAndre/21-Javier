@@ -29,7 +29,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
+import javax.swing.plaf.FontUIResource;
 
 import org.imgscalr.Scalr;
 
@@ -47,7 +49,7 @@ public class TableView extends JPanel
 	 * 
 	 */
 	
-	private Game				game;
+	private Controller			controller;
 	private BufferedImage 		tableImage;
 	
 	private String[]			playerNames;
@@ -68,7 +70,7 @@ public class TableView extends JPanel
 	private int					playerCardImageHeight;
 
 	private ImageIcon			cardBackImageIcon;
-	private JButton				cardDeckButton;
+	private JButton				dealButton;
 	private JButton				standButton;
 	private JButton				newGameButton;
 	private ActionListener		newGameButtonActionListener;
@@ -90,7 +92,7 @@ public class TableView extends JPanel
 	private final String 		IMAGE_PATH							= "/Images/";
 	private final String 		TABLE_IMAGE							= "BlackJackTable.jpg";
 	private final String		CARD_BACK_IMAGE 					= "BlueCardBack.png";	
-	private final String		CARD_DECK_IMAGE						= "BlueCardDeck.png";	// BlueCardDeck.png
+	private final String		DEAL_BUTTON_IMAGE					= "BlueCardDeck.png";	// BlueCardDeck.png
 	private final String		STAND_BUTTON_IMAGE					= "stand.png";
 	
 	private final int			REFERENCE_TABLE_DIMENSION_WIDTH		= 1360;					// For reference screen resolution 1366 width
@@ -130,8 +132,8 @@ public class TableView extends JPanel
 	private final int			DEALER_FONT_SIZE 					= 30;
 	private final Color			DEALER_NAME_COLOR					= Color.YELLOW;
 	
-	private final int			CARD_BUTTON_WIDTH					= 125;					// 115
-	private final int			CARD_BUTTON_HEIGHT					= 250;					// 128
+	private final int			BUTTON_WIDTH						= 125;					// 115
+	private final int			BUTTON_HEIGHT						= 250;					// 128
 	private final Color			NEW_GAME_BUTTON_COLOR				= Color.RED;
 	private final String		NEW_GAME_BUTTON_TEXT				= "       New Game       ";
 	private final String		NEW_GAME_BUTTON_TOOLTIP_TEXT		= "Click to Play a New Game";
@@ -152,13 +154,13 @@ public class TableView extends JPanel
 	 * 
 	 */
 	
-	public TableView(Game game, Dimension dimension)
+	public TableView(Controller controller, Dimension dimension)
 	{
 		// Initialize class variables
 		
-		this.game 					= game;
-		tableDimension  			= dimension;
-		gameInProgress 				= false;
+		this.controller 	= controller;
+		tableDimension  	= dimension;
+		gameInProgress 		= false;
 
 		/*
 		 * Setup the Table panel
@@ -173,6 +175,10 @@ public class TableView extends JPanel
 		 * Scale the Table Panel and its components
 		 * 
 		 */
+		
+		// Setup the Tooltip font and font size
+		
+        UIManager.put("ToolTip.font", new FontUIResource("SansSerif", Font.BOLD, 18));
 		
 		// Calculate the percentage of the reference resolution represented by our current resolution
 		
@@ -220,10 +226,10 @@ public class TableView extends JPanel
 		
 		int verticalTablePanelStrut 			= (verticalTablePanelHeight - (playerNameTextFieldHeight + playerCardScrollPaneHeight + (playerPointsLabelHeight * 2))) / 3;
 				
-		// Scale the Card Deck and Stand Buttons
+		// Scale the Deal and Stand Buttons
 		
-		int cardDeckButtonWidth					= (int) (CARD_BUTTON_WIDTH * percentOfReferenceWidth);		
-		int cardDeckButtonHeight				= (int) (CARD_BUTTON_HEIGHT * percentOfReferenceHeight);
+		int buttonWidth							= (int) (BUTTON_WIDTH * percentOfReferenceWidth);		
+		int buttonHeight						= (int) (BUTTON_HEIGHT * percentOfReferenceHeight);
 		
 		// Scale the New Game Button
 		
@@ -232,11 +238,11 @@ public class TableView extends JPanel
 
 		// Scale the Button Horizontal Panel Struts
 		
-		int buttonsHorizontalPanelStrut 		= (verticalTablePanelWidth - (cardDeckButtonWidth * 2)) / 3;
+		int buttonsHorizontalPanelStrut 		= (verticalTablePanelWidth - (buttonWidth * 2)) / 3;
 
 		// Scale the Buttons Vertical Panel Struts
 		
-		int buttonsVerticalPanelStrut			= (verticalTablePanelHeight - cardDeckButtonHeight - newGameButtonHeight) / 3;
+		int buttonsVerticalPanelStrut			= (verticalTablePanelHeight - buttonHeight - newGameButtonHeight) / 3;
 		
 		/*
 		 * Display the Table image
@@ -373,10 +379,10 @@ public class TableView extends JPanel
 		// 2. Create the array with "new" (happens at execution time)
 		// 3. Fill the array with a for loop (happens at execution time)
 		
-		JPanel[] playerNameHorizontalPanels = new JPanel[Game.MAX_NUMBER_OF_PLAYERS];
-		playerNameTextFields 				= new JTextField[Game.MAX_NUMBER_OF_PLAYERS];
+		JPanel[] playerNameHorizontalPanels = new JPanel[Controller.MAX_NUMBER_OF_PLAYERS];
+		playerNameTextFields 				= new JTextField[Controller.MAX_NUMBER_OF_PLAYERS];
 		
-		for (int playerNumber = 0; playerNumber < Game.MAX_NUMBER_OF_PLAYERS; playerNumber++)
+		for (int playerNumber = 0; playerNumber < Controller.MAX_NUMBER_OF_PLAYERS; playerNumber++)
 		{
 			playerNameTextFields[playerNumber] = new JTextField();
 			
@@ -474,13 +480,13 @@ public class TableView extends JPanel
 		 *  
 		 */
 
-		playerCardPanels 					= new JPanel[Game.MAX_NUMBER_OF_PLAYERS];
+		playerCardPanels 					= new JPanel[Controller.MAX_NUMBER_OF_PLAYERS];
 		
-		JScrollPane[] playerCardScrollPanes = new JScrollPane[Game.MAX_NUMBER_OF_PLAYERS];
+		JScrollPane[] playerCardScrollPanes = new JScrollPane[Controller.MAX_NUMBER_OF_PLAYERS];
 		
-		JPanel[] playerCardScrollPanePanels	= new JPanel[Game.MAX_NUMBER_OF_PLAYERS];
+		JPanel[] playerCardScrollPanePanels	= new JPanel[Controller.MAX_NUMBER_OF_PLAYERS];
 		
-		for (int playerNumber = 0; playerNumber < Game.MAX_NUMBER_OF_PLAYERS; playerNumber++)
+		for (int playerNumber = 0; playerNumber < Controller.MAX_NUMBER_OF_PLAYERS; playerNumber++)
 		{
 			// Create the Player Card Panel
 			
@@ -551,9 +557,9 @@ public class TableView extends JPanel
 		 *  
 		 */
 		
-		playerPointsLabels = new JLabel[Game.MAX_NUMBER_OF_PLAYERS];
+		playerPointsLabels = new JLabel[Controller.MAX_NUMBER_OF_PLAYERS];
 		
-		for (int playerNumber = 0; playerNumber < Game.MAX_NUMBER_OF_PLAYERS; playerNumber++)
+		for (int playerNumber = 0; playerNumber < Controller.MAX_NUMBER_OF_PLAYERS; playerNumber++)
 		{
 			playerPointsLabels[playerNumber] = new JLabel();
 
@@ -584,12 +590,12 @@ public class TableView extends JPanel
 		 * 
 		 */
 
-		playerWinsLabels 						= new JLabel[Game.MAX_NUMBER_OF_PLAYERS];
-		playerLossesLabels						= new JLabel[Game.MAX_NUMBER_OF_PLAYERS];
-		playerTiesLabels						= new JLabel[Game.MAX_NUMBER_OF_PLAYERS];
-		JPanel[] playerScoresHorizontalPanels 	= new JPanel[Game.MAX_NUMBER_OF_PLAYERS];
+		playerWinsLabels 						= new JLabel[Controller.MAX_NUMBER_OF_PLAYERS];
+		playerLossesLabels						= new JLabel[Controller.MAX_NUMBER_OF_PLAYERS];
+		playerTiesLabels						= new JLabel[Controller.MAX_NUMBER_OF_PLAYERS];
+		JPanel[] playerScoresHorizontalPanels 	= new JPanel[Controller.MAX_NUMBER_OF_PLAYERS];
 		
-		for (int playerNumber = 0; playerNumber < Game.MAX_NUMBER_OF_PLAYERS; playerNumber++)
+		for (int playerNumber = 0; playerNumber < Controller.MAX_NUMBER_OF_PLAYERS; playerNumber++)
 		{
 			// Create a Player Scores Horizontal Panel
 			
@@ -701,7 +707,7 @@ public class TableView extends JPanel
  	     *  
  	     */
 
-		for (int playerNumber = 0; playerNumber < Game.MAX_NUMBER_OF_PLAYERS; playerNumber++)
+		for (int playerNumber = 0; playerNumber < Controller.MAX_NUMBER_OF_PLAYERS; playerNumber++)
 		{
 			int verticalTablePanelStrutRemainder = (verticalTablePanelHeight - (playerNameTextFieldHeight + playerCardScrollPaneHeight + (playerPointsLabelHeight * 2))) % 3;
 
@@ -762,52 +768,50 @@ public class TableView extends JPanel
 		}
 		
 		/*
-		 * Create the Card Deck, Stand and New Game Buttons
+		 * Create the Deal, Stand and New Game Buttons
 		 * 
 		 */
 
-		// Create the Card Deck Button
+		// Create the Deal Button
 		
-		cardDeckButton = new JButton();
+		dealButton = new JButton();
 
-		// Scaled Card Deck Button
+		// Scaled Deal Button
 		
-		cardDeckButton.setPreferredSize(new Dimension(cardDeckButtonWidth, cardDeckButtonHeight));
-		
-		cardDeckButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		cardDeckButton.setToolTipText("Hit Me!");
+		dealButton.setPreferredSize(new Dimension(buttonWidth, buttonHeight));
+		dealButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		dealButton.setToolTipText("Hit Me!");
 
 		try
 		{
-			BufferedImage cardDeckImage = ImageIO.read(this.getClass().getResource(IMAGE_PATH + CARD_DECK_IMAGE));
+			BufferedImage cardDeckImage = ImageIO.read(this.getClass().getResource(IMAGE_PATH + DEAL_BUTTON_IMAGE));
 
 			// Scale Card Deck Image
 			
-			cardDeckImage = Scalr.resize(cardDeckImage, Scalr.Method.QUALITY, cardDeckButtonWidth, cardDeckButtonHeight, Scalr.OP_ANTIALIAS);
+			cardDeckImage = Scalr.resize(cardDeckImage, Scalr.Method.QUALITY, buttonWidth, buttonHeight, Scalr.OP_ANTIALIAS);
 			
-			cardDeckButton.setIcon(new ImageIcon(cardDeckImage));
+			dealButton.setIcon(new ImageIcon(cardDeckImage));
 		}
 		catch (Exception e)
 		{
 			JOptionPane.showMessageDialog(null, "System Error: unable to find the Card image file " + 
-												CARD_DECK_IMAGE + ". Please reinstall the Game.",
+												DEAL_BUTTON_IMAGE + ". Please reinstall the Game.",
 												"TableView: Constructor Method", JOptionPane.ERROR_MESSAGE);			
 			System.exit(ERROR);
 		}
 						
 		// Remove the colored border with setContentAreaFilled(false) (leaves a transparent focus area).
 		// Remove the transparent focus area with setFocusPainted(false) and setBorder(BorderFactory.createEmptyBorder()).
-
-		cardDeckButton.setContentAreaFilled(false);
-		cardDeckButton.setFocusPainted(false);
-		cardDeckButton.setBorder(BorderFactory.createEmptyBorder());
+		// Do not setEnabled(false) - it grays out the button image!
+		
+		dealButton.setContentAreaFilled(false);
+		dealButton.setFocusPainted(false);
+		dealButton.setBorder(BorderFactory.createEmptyBorder());
 		
 		// Add Listeners. FocusListener does not work with JButton, it wont be triggered. Use MouseListener instead.
 		
-		CardDeckButtonActionListener cardDeckButtonActionListener = new CardDeckButtonActionListener();
-		cardDeckButton.addActionListener(cardDeckButtonActionListener);
-		CardDeckButtonMouseListener cardDeckButtonMouseListener = new CardDeckButtonMouseListener();
-		cardDeckButton.addMouseListener(cardDeckButtonMouseListener);
+		dealButton.addActionListener(new DealButtonActionListener());
+		dealButton.addMouseListener(new CardDeckButtonMouseListener());
 
 		// Create the Stand Button
 		
@@ -815,7 +819,7 @@ public class TableView extends JPanel
 
 		// Scaled Stand Button
 		
-		standButton.setPreferredSize(new Dimension(cardDeckButtonWidth, cardDeckButtonHeight));
+		standButton.setPreferredSize(new Dimension(buttonWidth, buttonHeight));
 		
 		standButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		standButton.setToolTipText("Stand!");
@@ -826,7 +830,7 @@ public class TableView extends JPanel
 
 			// Scale Card Deck Image
 			
-			stayButtonImage = Scalr.resize(stayButtonImage, Scalr.Method.QUALITY, cardDeckButtonWidth, cardDeckButtonHeight, Scalr.OP_ANTIALIAS);
+			stayButtonImage = Scalr.resize(stayButtonImage, Scalr.Method.QUALITY, buttonWidth, buttonHeight, Scalr.OP_ANTIALIAS);
 			
 			standButton.setIcon(new ImageIcon(stayButtonImage));
 		}
@@ -859,7 +863,7 @@ public class TableView extends JPanel
 		
 		// Scaled Buttons Horizontal Panel
 		
-		buttonsHorizontalPanel.setPreferredSize(new Dimension(verticalTablePanelWidth, cardDeckButtonHeight));
+		buttonsHorizontalPanel.setPreferredSize(new Dimension(verticalTablePanelWidth, buttonHeight));
 		
 		// Must set both for the background to be transparent
 
@@ -870,7 +874,7 @@ public class TableView extends JPanel
 		// Horizontal Struts must be added to a Box layout horizontal panel.
 	
 		buttonsHorizontalPanel.add(Box.createHorizontalStrut(buttonsHorizontalPanelStrut));
-		buttonsHorizontalPanel.add(cardDeckButton);
+		buttonsHorizontalPanel.add(dealButton);
 		buttonsHorizontalPanel.add(Box.createHorizontalStrut(buttonsHorizontalPanelStrut));
 		buttonsHorizontalPanel.add(standButton);
 		buttonsHorizontalPanel.add(Box.createHorizontalStrut(buttonsHorizontalPanelStrut));
@@ -904,7 +908,7 @@ public class TableView extends JPanel
 		 *  
 		 */
 
-		int buttonsVerticalPanelStrutRemainder = (verticalTablePanelHeight - cardDeckButtonHeight - newGameButtonHeight) % 3;
+		int buttonsVerticalPanelStrutRemainder = (verticalTablePanelHeight - buttonHeight - newGameButtonHeight) % 3;
 		
 		int buttonsVerticalPanelStrutAdditionalHeight = 0;
 		
@@ -962,7 +966,7 @@ public class TableView extends JPanel
 	 * 
 	 */
 	
-	private void displayCard(Card card, int playerNumber)
+	private void displayCard(CardModel card, int playerNumber)
 	{
 		ImageIcon imageIcon = new ImageIcon();
 		
@@ -1048,11 +1052,11 @@ public class TableView extends JPanel
 	{
 		// Remove the Dealer's second Card (Card Image Back)
 		
-		playerCardPanels[Game.MAX_NUMBER_OF_PLAYERS - 1].remove(1);
+		playerCardPanels[Controller.MAX_NUMBER_OF_PLAYERS - 1].remove(1);
 	
 		// Get the Dealer's second Card
 			
-		Card card = game.getPlayerHand(Game.MAX_NUMBER_OF_PLAYERS, 2);
+		CardModel card = controller.getPlayerHand(Controller.MAX_NUMBER_OF_PLAYERS, 2);
 		
 		ImageIcon imageIcon = new ImageIcon();
 			
@@ -1115,12 +1119,12 @@ public class TableView extends JPanel
 
 		// Display the Dealer's second card
 		
-		playerCardPanels[Game.MAX_NUMBER_OF_PLAYERS - 1].add(playerCardLabel);
+		playerCardPanels[Controller.MAX_NUMBER_OF_PLAYERS - 1].add(playerCardLabel);
 		
 		// Must revalidate and repaint to display images
 		
-		playerCardPanels[Game.MAX_NUMBER_OF_PLAYERS - 1].revalidate();
-		playerCardPanels[Game.MAX_NUMBER_OF_PLAYERS - 1].repaint();
+		playerCardPanels[Controller.MAX_NUMBER_OF_PLAYERS - 1].revalidate();
+		playerCardPanels[Controller.MAX_NUMBER_OF_PLAYERS - 1].repaint();
 	}
 
 	private class ScrollablePanel extends JPanel implements Scrollable
@@ -1294,11 +1298,11 @@ public class TableView extends JPanel
     }
 	
 	/*
-	 * Card Deck Button Action Listener
+	 * Deal Button Action Listener
 	 * 
 	 */
 	
-	private class CardDeckButtonActionListener implements ActionListener
+	private class DealButtonActionListener implements ActionListener
     {
 		/*
 		 * actionPerformed Method
@@ -1314,33 +1318,33 @@ public class TableView extends JPanel
 			{
 				// Get the current player number
 				
-				int currentPlayerNumber = game.getCurrentPlayer();
+				int currentPlayerNumber = controller.getCurrentPlayer();
 				
 				// If the current Player is an AI Player
 
-				if (game.getPlayerType(game.getCurrentPlayer()) == Player.AI_PLAYER)
+				if (controller.getPlayerType(currentPlayerNumber) == Player.AI_PLAYER)
 				{
-					// Let the current AI Player and all AI Players that inmediately follow it play
+					// Let the current AI Player and all AI Players that inmediately follow to play
 					
-					while (game.getPlayerType(game.getCurrentPlayer()) == Player.AI_PLAYER && !game.isGameOver())
+					while (controller.getPlayerType(controller.getCurrentPlayer()) == Player.AI_PLAYER && !controller.isGameOver())
 					{
 						// Get the current player number
 						
-						currentPlayerNumber = game.getCurrentPlayer();
+						currentPlayerNumber = controller.getCurrentPlayer();
 						
 						// Let the current AI Player play
 						
-						while(game.getPlayerStatus(currentPlayerNumber) == Player.PLAYING)
+						while(controller.getPlayerStatus(currentPlayerNumber) == Player.PLAYING)
 						{
 							// Tell the current AI Player to play
 							
-							game.play();
+							controller.play();
 							
 							// Display the Card(s) drawn. Ignore a blank Card when the AI Player stands without drawing a Card.
 							
-							for (int cardNumber = 3; cardNumber <= game.getPlayerCardsOnHand(currentPlayerNumber); cardNumber++)
+							for (int cardNumber = 3; cardNumber <= controller.getPlayerCardsOnHand(currentPlayerNumber); cardNumber++)
 							{
-								Card card = game.getPlayerHand(currentPlayerNumber, cardNumber);
+								CardModel card = controller.getPlayerHand(currentPlayerNumber, cardNumber);
 								
 								if (card.isValid())
 								{
@@ -1350,7 +1354,7 @@ public class TableView extends JPanel
 							
 							// Get the Player Points. Chekc for Blackjack.
 							
-							if (game.getPlayerPoints(currentPlayerNumber) == 21 && game.getPlayerCardsOnHand(currentPlayerNumber) == 2)
+							if (controller.getPlayerPoints(currentPlayerNumber) == 21 && controller.getPlayerCardsOnHand(currentPlayerNumber) == 2)
 							{
 								playerPointsLabels[currentPlayerNumber - 1].setForeground(BLACKJACK_COLOR);
 								playerPointsLabels[currentPlayerNumber - 1].setText(BLACKJACK_TEXT);
@@ -1358,7 +1362,7 @@ public class TableView extends JPanel
 							else
 							{
 								playerPointsLabels[currentPlayerNumber - 1].setForeground(PLAYER_POINTS_COLOR);
-								playerPointsLabels[currentPlayerNumber - 1].setText("" + game.getPlayerPoints(currentPlayerNumber) + " Points");
+								playerPointsLabels[currentPlayerNumber - 1].setText("" + controller.getPlayerPoints(currentPlayerNumber) + " Points");
 							}
 							
 							// Must revalidate and repaint to change colors
@@ -1368,24 +1372,24 @@ public class TableView extends JPanel
 							
 							// Check if the current Player stood
 							
-							if (game.getPlayerStatus(currentPlayerNumber) == Player.STOOD)
+							if (controller.getPlayerStatus(currentPlayerNumber) == Player.STOOD)
 							{
 								// Must setDisabledTextColor in order to change its foreground color.
 								// Cannot use setForeground, TextField must be enabled and stay enabled!
 								
 								playerNameTextFields[currentPlayerNumber - 1].setDisabledTextColor(PLAYER_STOOD_COLOR);						
-								playerNameTextFields[currentPlayerNumber - 1].setText(game.getPlayerName(currentPlayerNumber) + PLAYER_STOOD_TEXT);					
+								playerNameTextFields[currentPlayerNumber - 1].setText(controller.getPlayerName(currentPlayerNumber) + PLAYER_STOOD_TEXT);					
 							}
 							
 							// Check if the current Player has busted
 							
-							else if (game.getPlayerStatus(currentPlayerNumber) == Player.BUSTED)
+							else if (controller.getPlayerStatus(currentPlayerNumber) == Player.BUSTED)
 							{
 								// Must setDisabledTextColor in order to change its foreground color.
 								// Cannot use setForeground, TextField must be enabled and stay enabled!
 								
 								playerNameTextFields[currentPlayerNumber - 1].setDisabledTextColor(PLAYER_BUSTED_COLOR);
-								playerNameTextFields[currentPlayerNumber - 1].setText(game.getPlayerName(currentPlayerNumber) + PLAYER_BUSTED_TEXT);
+								playerNameTextFields[currentPlayerNumber - 1].setText(controller.getPlayerName(currentPlayerNumber) + PLAYER_BUSTED_TEXT);
 							}
 							else
 							{
@@ -1405,7 +1409,7 @@ public class TableView extends JPanel
 				{
 					// Tell the current Human Player to draw a Card
 					
-					Card card = game.play();
+					CardModel card = controller.play();
 					
 					// Display the Card drawn
 					
@@ -1413,7 +1417,7 @@ public class TableView extends JPanel
 					
 					// Get the Player Points. Chekc for Blackjack.
 					
-					if (game.getPlayerPoints(currentPlayerNumber) == 21 && game.getPlayerCardsOnHand(currentPlayerNumber) == 2)
+					if (controller.getPlayerPoints(currentPlayerNumber) == 21 && controller.getPlayerCardsOnHand(currentPlayerNumber) == 2)
 					{
 						playerPointsLabels[currentPlayerNumber - 1].setForeground(BLACKJACK_COLOR);
 						playerPointsLabels[currentPlayerNumber - 1].setText(BLACKJACK_TEXT);
@@ -1421,7 +1425,7 @@ public class TableView extends JPanel
 					else
 					{
 						playerPointsLabels[currentPlayerNumber - 1].setForeground(PLAYER_POINTS_COLOR);
-						playerPointsLabels[currentPlayerNumber - 1].setText("" + game.getPlayerPoints(currentPlayerNumber) + " Points");
+						playerPointsLabels[currentPlayerNumber - 1].setText("" + controller.getPlayerPoints(currentPlayerNumber) + " Points");
 					}
 
 					// Must revalidate and repaint to change colors
@@ -1431,24 +1435,24 @@ public class TableView extends JPanel
 					
 					// Check if the current Player stood
 					
-					if (game.getPlayerStatus(currentPlayerNumber) == Player.STOOD)
+					if (controller.getPlayerStatus(currentPlayerNumber) == Player.STOOD)
 					{
 						// Must setDisabledTextColor in order to change its foreground color.
 						// Cannot use setForeground, TextField must be enabled and stay enabled!
 						
 						playerNameTextFields[currentPlayerNumber - 1].setDisabledTextColor(PLAYER_STOOD_COLOR);						
-						playerNameTextFields[currentPlayerNumber - 1].setText(game.getPlayerName(currentPlayerNumber) + PLAYER_STOOD_TEXT);
+						playerNameTextFields[currentPlayerNumber - 1].setText(controller.getPlayerName(currentPlayerNumber) + PLAYER_STOOD_TEXT);
 					}
 					
 					// Check if the current Player has busted
 					
-					else if (game.getPlayerStatus(currentPlayerNumber) == Player.BUSTED)
+					else if (controller.getPlayerStatus(currentPlayerNumber) == Player.BUSTED)
 					{
 						// Must setDisabledTextColor in order to change its foreground color.
 						// Cannot use setForeground, TextField must be enabled and stay enabled!
 						
 						playerNameTextFields[currentPlayerNumber - 1].setDisabledTextColor(PLAYER_BUSTED_COLOR);
-						playerNameTextFields[currentPlayerNumber - 1].setText(game.getPlayerName(currentPlayerNumber) + PLAYER_BUSTED_TEXT);
+						playerNameTextFields[currentPlayerNumber - 1].setText(controller.getPlayerName(currentPlayerNumber) + PLAYER_BUSTED_TEXT);
 					}
 					else
 					{
@@ -1468,7 +1472,7 @@ public class TableView extends JPanel
 				 *  
 				 */
 				
-				if (game.isGameOver())
+				if (controller.isGameOver())
 				{
 					// Display the Dealer's face down Card (the second Card, the Card "in the hole")
 					
@@ -1476,23 +1480,23 @@ public class TableView extends JPanel
 					
 					// Update the Players wins, loses and ties
 					
-					for (int playerNumber = 0; playerNumber < Game.MAX_NUMBER_OF_PLAYERS; playerNumber++)
+					for (int playerNumber = 0; playerNumber < Controller.MAX_NUMBER_OF_PLAYERS; playerNumber++)
 					{
-						playerWinsLabels[playerNumber].setText("Wins:   " + game.getPlayerWins(playerNumber + 1));
+						playerWinsLabels[playerNumber].setText("Wins:   " + controller.getPlayerWins(playerNumber + 1));
 						
 						// Must revalidate and repaint to change colors
 						
 						playerWinsLabels[playerNumber].revalidate();
 						playerWinsLabels[playerNumber].repaint();
 						
-						playerLossesLabels[playerNumber].setText("Loses:   " + game.getPlayerLoses(playerNumber + 1));
+						playerLossesLabels[playerNumber].setText("Loses:   " + controller.getPlayerLoses(playerNumber + 1));
 						
 						// Must revalidate and repaint to change colors
 						
 						playerLossesLabels[playerNumber].revalidate();
 						playerLossesLabels[playerNumber].repaint();
 						
-						playerTiesLabels[playerNumber].setText("Ties:   " + game.getPlayerTies(playerNumber + 1));
+						playerTiesLabels[playerNumber].setText("Ties:   " + controller.getPlayerTies(playerNumber + 1));
 						
 						// Must revalidate and repaint to change colors
 						
@@ -1504,11 +1508,22 @@ public class TableView extends JPanel
 					
 					gameInProgress = false;
 					
-					// Change the Start Game Button to the New Game Button
+					// Change the Start Game Button to the New Game Button and give it focus
 					
 					newGameButton.setBackground(NEW_GAME_BUTTON_COLOR);
 					newGameButton.setText(NEW_GAME_BUTTON_TEXT);
 					newGameButton.setToolTipText(NEW_GAME_BUTTON_TOOLTIP_TEXT);
+					newGameButton.requestFocus();
+
+					// Remove the focus from one of the other buttons
+					
+					dealButton.setContentAreaFilled(false);
+					dealButton.setFocusPainted(false);
+					dealButton.setBorder(BorderFactory.createEmptyBorder());
+					
+					standButton.setContentAreaFilled(false);
+					standButton.setFocusPainted(false);
+					standButton.setBorder(BorderFactory.createEmptyBorder());
 					
 					// Remove Start Game Action Listener
 					
@@ -1523,18 +1538,18 @@ public class TableView extends JPanel
 				{										
 					// Hightlight the next Player's turn
 
-					playerNameTextFields[game.getCurrentPlayer() - 1].setDisabledTextColor(NEXT_PLAYERS_TURN);
+					playerNameTextFields[controller.getCurrentPlayer() - 1].setDisabledTextColor(NEXT_PLAYERS_TURN);
 					
 					// Must revalidate and repaint to change colors
 					
-					playerNameTextFields[game.getCurrentPlayer() - 1].revalidate();
-					playerNameTextFields[game.getCurrentPlayer() - 1].repaint();
+					playerNameTextFields[controller.getCurrentPlayer() - 1].revalidate();
+					playerNameTextFields[controller.getCurrentPlayer() - 1].repaint();
 					
 					// If the next Player is an AI Player, programmatically click the Card Deck button
 					
-					if (game.getPlayerType(game.getCurrentPlayer()) == Player.AI_PLAYER)
+					if (controller.getPlayerType(controller.getCurrentPlayer()) == Player.AI_PLAYER)
 					{
-						cardDeckButton.doClick();
+						dealButton.doClick();
 					}
 				}				
 			}
@@ -1557,8 +1572,8 @@ public class TableView extends JPanel
 			{
 				// Display the button's transparent focus area
 				
-				cardDeckButton.setFocusPainted(true);
-				cardDeckButton.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1, true));
+				dealButton.setFocusPainted(true);
+				dealButton.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1, true));
 			}						
 		}
 
@@ -1569,8 +1584,8 @@ public class TableView extends JPanel
 			{
 				// Hide the button's transparent focus area
 				
-				cardDeckButton.setFocusPainted(false);
-				cardDeckButton.setBorder(BorderFactory.createEmptyBorder());
+				dealButton.setFocusPainted(false);
+				dealButton.setBorder(BorderFactory.createEmptyBorder());
 			}
 		}
 
@@ -1615,23 +1630,23 @@ public class TableView extends JPanel
 			{
 				// Get the current player number
 				
-				int currentPlayerNumber = game.getCurrentPlayer();
+				int currentPlayerNumber = controller.getCurrentPlayer();
 				
 				// Tell the current Player to stand
 				
-				game.stand();
+				controller.stand();
 				
 				// Check if the current Game is over
 				
-				if (game.isGameOver())
+				if (controller.isGameOver())
 				{
 					// Update the Players wins, loses and ties
 					
-					for (int playerNumber = 0; playerNumber < Game.MAX_NUMBER_OF_PLAYERS; playerNumber++)
+					for (int playerNumber = 0; playerNumber < Controller.MAX_NUMBER_OF_PLAYERS; playerNumber++)
 					{
-						playerWinsLabels[playerNumber].setText("Wins:   " + game.getPlayerWins(playerNumber + 1));
-						playerLossesLabels[playerNumber].setText("Loses:   " + game.getPlayerLoses(playerNumber + 1));
-						playerWinsLabels[playerNumber].setText("Ties:   " + game.getPlayerTies(playerNumber + 1));
+						playerWinsLabels[playerNumber].setText("Wins:   " + controller.getPlayerWins(playerNumber + 1));
+						playerLossesLabels[playerNumber].setText("Loses:   " + controller.getPlayerLoses(playerNumber + 1));
+						playerWinsLabels[playerNumber].setText("Ties:   " + controller.getPlayerTies(playerNumber + 1));
 					}
 					
 					// Indicate the current Game is over
@@ -1658,7 +1673,7 @@ public class TableView extends JPanel
 					// Indicate the Player has stood
 					
 					playerNameTextFields[currentPlayerNumber - 1].setDisabledTextColor(PLAYER_STOOD_COLOR);
-					playerNameTextFields[currentPlayerNumber - 1].setText(game.getPlayerName(currentPlayerNumber) + PLAYER_STOOD_TEXT);
+					playerNameTextFields[currentPlayerNumber - 1].setText(controller.getPlayerName(currentPlayerNumber) + PLAYER_STOOD_TEXT);
 					
 					// Must revalidate and repaint to change colors
 					
@@ -1667,18 +1682,18 @@ public class TableView extends JPanel
 					
 					// Hightlight the next Player's turn
 
-					playerNameTextFields[game.getCurrentPlayer() - 1].setDisabledTextColor(NEXT_PLAYERS_TURN);
+					playerNameTextFields[controller.getCurrentPlayer() - 1].setDisabledTextColor(NEXT_PLAYERS_TURN);
 					
 					// Must revalidate and repaint to change colors
 					
-					playerNameTextFields[game.getCurrentPlayer() - 1].revalidate();
-					playerNameTextFields[game.getCurrentPlayer() - 1].repaint();
+					playerNameTextFields[controller.getCurrentPlayer() - 1].revalidate();
+					playerNameTextFields[controller.getCurrentPlayer() - 1].repaint();
 					
 					// If the next Player is an AI Player, programmatically click the Card Deck button
 					
-					if (game.getPlayerType(game.getCurrentPlayer()) == Player.AI_PLAYER)
+					if (controller.getPlayerType(controller.getCurrentPlayer()) == Player.AI_PLAYER)
 					{
-						cardDeckButton.doClick();
+						dealButton.doClick();
 					}
 				}
 			}	
@@ -1766,7 +1781,7 @@ public class TableView extends JPanel
 			{
 				// Clear the Player Names TextFields and enable them (except the Dealer's)
 
-				for (int playerNumber = 0; playerNumber < Game.NUMBER_OF_PLAYERS; playerNumber++)
+				for (int playerNumber = 0; playerNumber < Controller.NUMBER_OF_PLAYERS; playerNumber++)
 				{
 					playerNameTextFields[playerNumber].setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED, Color.BLACK, Color.WHITE));
 					playerNameTextFields[playerNumber].setText(INITIAL_PLAYER_NAME);
@@ -1785,7 +1800,7 @@ public class TableView extends JPanel
 				
 				// Remove the Player Card Images and reset the Player Point Labels
 				
-				for (int playerNumber = 0; playerNumber < Game.MAX_NUMBER_OF_PLAYERS; playerNumber++)
+				for (int playerNumber = 0; playerNumber < Controller.MAX_NUMBER_OF_PLAYERS; playerNumber++)
 				{
 					playerCardPanels[playerNumber].removeAll();
 					
@@ -1845,9 +1860,9 @@ public class TableView extends JPanel
 				// Save the Player Names and disable the Player Name TextFields.
 				// The Controller New Game method will set the Dealer's name as the name of an AI Player.
 
-				playerNames = new String[Game.MAX_NUMBER_OF_PLAYERS];
+				playerNames = new String[Controller.MAX_NUMBER_OF_PLAYERS];
 				
-				for (int playerNumber = 0; playerNumber < Game.NUMBER_OF_PLAYERS; playerNumber++)
+				for (int playerNumber = 0; playerNumber < Controller.NUMBER_OF_PLAYERS; playerNumber++)
 				{
 					if (!playerNameTextFields[playerNumber].getText().equals(INITIAL_PLAYER_NAME))
 					{
@@ -1863,11 +1878,11 @@ public class TableView extends JPanel
 				
 				// Tell the Controller to begin a New Game
 				
-				game.newGame(playerNames);
+				controller.newGame(playerNames);
 
 				// Display all the Player Names and disable the Player Name TextFields
 				
-				for (int playerNumber = 0; playerNumber < Game.NUMBER_OF_PLAYERS; playerNumber++)
+				for (int playerNumber = 0; playerNumber < Controller.NUMBER_OF_PLAYERS; playerNumber++)
 				{
 					playerNameTextFields[playerNumber].setDisabledTextColor(PLAYER_NAME_TEXTFIELD_COLOR);
 					
@@ -1876,7 +1891,7 @@ public class TableView extends JPanel
 					playerNameTextFields[playerNumber].revalidate();
 					playerNameTextFields[playerNumber].repaint();
 					
-					playerNameTextFields[playerNumber].setText(game.getPlayerName(playerNumber + 1));
+					playerNameTextFields[playerNumber].setText(controller.getPlayerName(playerNumber + 1));
 					playerNameTextFields[playerNumber].setEnabled(false);
 				}
 
@@ -1884,15 +1899,15 @@ public class TableView extends JPanel
 				
 				for (int cardNumber = 1; cardNumber <= 2; cardNumber++)
 				{
-					for (int playerNumber = 0; playerNumber < Game.MAX_NUMBER_OF_PLAYERS; playerNumber++)
+					for (int playerNumber = 0; playerNumber < Controller.MAX_NUMBER_OF_PLAYERS; playerNumber++)
 					{
 						// Display the second Dealer Card face down (Card in the Hole)
 						
-						if (playerNumber == Game.MAX_NUMBER_OF_PLAYERS - 1 && cardNumber == 2)
+						if (playerNumber == Controller.MAX_NUMBER_OF_PLAYERS - 1 && cardNumber == 2)
 						{
 							// Create a blank Card
 							
-							Card card = new Card();
+							CardModel card = new CardModel();
 							
 							// Display the Card Back Image instead of the second Card dealt
 							
@@ -1902,7 +1917,7 @@ public class TableView extends JPanel
 						{
 							// Get the next Card dealt for this Player
 							
-							Card card = game.getPlayerHand(playerNumber + 1, cardNumber);
+							CardModel card = controller.getPlayerHand(playerNumber + 1, cardNumber);
 							
 							// Display the Card
 							
@@ -1915,15 +1930,15 @@ public class TableView extends JPanel
 				
 				int dealerPoints = 0;
 				
-				for (int playerNumber = 0; playerNumber < Game.MAX_NUMBER_OF_PLAYERS; playerNumber++)
+				for (int playerNumber = 0; playerNumber < Controller.MAX_NUMBER_OF_PLAYERS; playerNumber++)
 				{
 					// Check for the Dealer
 					
-					if (playerNumber == Game.MAX_NUMBER_OF_PLAYERS - 1)
+					if (playerNumber == Controller.MAX_NUMBER_OF_PLAYERS - 1)
 					{
 						// Get the Dealer's first Card
 						
-						Card firstCard = game.getPlayerHand(Game.MAX_NUMBER_OF_PLAYERS, 1);
+						CardModel firstCard = controller.getPlayerHand(Controller.MAX_NUMBER_OF_PLAYERS, 1);
 
 						// If Dealer's first Card is an Ace, show the Dealer's points as 1 point
 						
@@ -1947,7 +1962,7 @@ public class TableView extends JPanel
 					else
 					{
 						playerPointsLabels[playerNumber].setForeground(PLAYER_POINTS_COLOR);
-						playerPointsLabels[playerNumber].setText("" + game.getPlayerPoints(playerNumber + 1) + " Points");
+						playerPointsLabels[playerNumber].setText("" + controller.getPlayerPoints(playerNumber + 1) + " Points");
 						
 						// Must revalidate and repaint to change colors
 						
@@ -1958,9 +1973,9 @@ public class TableView extends JPanel
 
 				// Display whether or not each Player has stood or busted
 				
-				for (int playerNumber = 0; playerNumber < Game.MAX_NUMBER_OF_PLAYERS; playerNumber++)
+				for (int playerNumber = 0; playerNumber < Controller.MAX_NUMBER_OF_PLAYERS; playerNumber++)
 				{
-					if (game.getPlayerStatus(playerNumber + 1) == Player.STOOD)
+					if (controller.getPlayerStatus(playerNumber + 1) == Player.STOOD)
 					{
 						// Must setDisabledTextColor in order to change its foreground color.
 						// Cannot use setForeground, TextField must be enabled and stay enabled!
@@ -1973,7 +1988,7 @@ public class TableView extends JPanel
 						playerNameTextFields[playerNumber].revalidate();
 						playerNameTextFields[playerNumber].repaint();
 					}
-					else if (game.getPlayerStatus(playerNumber + 1) == Player.BUSTED)
+					else if (controller.getPlayerStatus(playerNumber + 1) == Player.BUSTED)
 					{
 						// Must setDisabledTextColor in order to change its foreground color.
 						// Cannot use setForeground, TextField must be enabled and stay enabled!
@@ -1990,16 +2005,16 @@ public class TableView extends JPanel
 				
 				// Check if this Game is already over
 				
-				if (!game.isGameOver())
+				if (!controller.isGameOver())
 				{
 					// Hightlight the first Player's turn
 				
-					playerNameTextFields[game.getCurrentPlayer() - 1].setDisabledTextColor(NEXT_PLAYERS_TURN);
+					playerNameTextFields[controller.getCurrentPlayer() - 1].setDisabledTextColor(NEXT_PLAYERS_TURN);
 					
 					// Must revalidate and repaint to change colors
 					
-					playerNameTextFields[game.getCurrentPlayer() - 1].revalidate();
-					playerNameTextFields[game.getCurrentPlayer() - 1].repaint();
+					playerNameTextFields[controller.getCurrentPlayer() - 1].revalidate();
+					playerNameTextFields[controller.getCurrentPlayer() - 1].repaint();
 					
 					// Indicate the new Game is in progress
 					
@@ -2007,9 +2022,9 @@ public class TableView extends JPanel
 					
 					// If the first Player is an AI Player, programmatically click the Card Deck button
 					
-					if (game.getPlayerType(game.getCurrentPlayer()) == Player.AI_PLAYER)
+					if (controller.getPlayerType(controller.getCurrentPlayer()) == Player.AI_PLAYER)
 					{
-						cardDeckButton.doClick();
+						dealButton.doClick();
 					}
 				}
 				else

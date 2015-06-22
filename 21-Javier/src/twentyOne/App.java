@@ -6,7 +6,7 @@ public class App
 	{
 		// Create an instance of the Controller class
 		
-		Game controller = new Game();
+		Controller controller = new Controller();
 		
 		// Create an instance of the View class
 		

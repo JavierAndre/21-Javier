@@ -9,14 +9,14 @@ import java.util.ArrayList;
  * 
  */
 
-public class Game
+public class Controller
 {
 	/*
 	 * Class Instance Variables
 	 * 
 	 */
 	
-	private CardDeck				cardDeck;
+	private CardDeckModel			cardDeck;
 	private String[]				playerNames;
 	private ArrayList<Player>		gamePlayers;
 	private int						currentPlayerNumber;
@@ -83,7 +83,7 @@ public class Game
 		return gamePlayers.get(playerNumber - 1).getPlayerTies();
 	}
 
-	public Card getPlayerHand(int playerNumber, int cardNumber)
+	public CardModel getPlayerHand(int playerNumber, int cardNumber)
 	{
 		return gamePlayers.get(playerNumber - 1).getPlayerHand(cardNumber);
 	}
@@ -113,7 +113,7 @@ public class Game
 	 * 
 	 */
 	
-	public Game()
+	public Controller()
 	{
 		// Create the Player Scores list
 		
@@ -138,7 +138,7 @@ public class Game
 
 		// Create a new Card Deck
 		
-		cardDeck = new CardDeck();
+		cardDeck = new CardDeckModel();
 		
 		// Create the Players (including the Dealer, the last Player).
 		// The Dealerwill be an AI Player.
@@ -192,44 +192,21 @@ public class Game
 	 * 
 	 */
 	
-	public Card play()
+	public CardModel play()
 	{
-		// Tell the current Player to play
-		
-		Card card = gamePlayers.get(currentPlayerNumber - 1).play();
+		// Tell the current Player to play		
+		CardModel card = gamePlayers.get(currentPlayerNumber - 1).play();
 
-		/*
-		 *  Check if the current Player stood
-		 *  
-		 */
-		
-		if (gamePlayers.get(currentPlayerNumber - 1).getPlayerStatus() == Player.STOOD)
+		// Check if the current Player stood or busted
+		if (gamePlayers.get(currentPlayerNumber - 1).getPlayerStatus() == Player.STOOD || gamePlayers.get(currentPlayerNumber - 1).getPlayerStatus() == Player.BUSTED)
 		{
 			// Decrement the number of Players currently playing
-			
 			playersCurrentlyPlaying--;
 			
 			// Give the next Player a turn
-			
 			nextPlayer();
 		}
 		
-		/*
-		 *  Check if the current Player busted
-		 *  
-		 */
-		
-		else if (gamePlayers.get(currentPlayerNumber - 1).getPlayerStatus() == Player.BUSTED)
-		{
-			// Decrement the number of Players currently playing
-			
-			playersCurrentlyPlaying--;
-			
-			// Give the next Player a turn
-			
-			nextPlayer();
-		}
-
 		/*
 		 * Check if this Game is over
 		 * 

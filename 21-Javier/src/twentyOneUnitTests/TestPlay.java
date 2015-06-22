@@ -2,7 +2,7 @@ package twentyOneUnitTests;
 
 import java.util.Scanner;
 
-import twentyOne.Game;
+import twentyOne.Controller;
 
 public class TestPlay
 {
@@ -11,7 +11,7 @@ public class TestPlay
 	 * 
 	 */
 	
-	private Game 		game;
+	private Controller 		game;
 	private String[]	playerNames;
 	
 	/*
@@ -29,7 +29,7 @@ public class TestPlay
 	
 	public TestPlay()
 	{
-		game = new Game();
+		game = new Controller();
 	}
 	
 	/*
@@ -65,7 +65,7 @@ public class TestPlay
 		
 		// Display each Player status and Player Hand
 		
-		for (int playerNumber = 1; playerNumber <= Game.MAX_NUMBER_OF_PLAYERS; playerNumber++)
+		for (int playerNumber = 1; playerNumber <= Controller.MAX_NUMBER_OF_PLAYERS; playerNumber++)
 		{
 			System.out.println("Player #" + (playerNumber));
 			System.out.println("Player Type (1 = Human, 2 = AI): " + game.getPlayerType(playerNumber));

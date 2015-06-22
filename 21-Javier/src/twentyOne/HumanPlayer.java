@@ -26,7 +26,7 @@ public class HumanPlayer extends Player
 	 * 
 	 */
 	
-	public HumanPlayer(CardDeck deck, int number, String name, int type, PlayerScores scores)
+	public HumanPlayer(CardDeckModel deck, int number, String name, int type, PlayerScores scores)
 	{
 		super(deck, number, name, type, scores);
 	}
@@ -37,11 +37,11 @@ public class HumanPlayer extends Player
 	 */
 	
 	@Override
-	public Card play()
+	public CardModel play()
 	{
 		// Draw a Card
 		
-		Card card = getCardDeck().deal();
+		CardModel card = getCardDeck().deal();
 		
 		// Add the Card to the Player Hand
 		

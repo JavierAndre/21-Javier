@@ -18,16 +18,16 @@ public abstract class Player
 	 * 
 	 */
 	
-	private CardDeck 		cardDeck;
+	private CardDeckModel 			cardDeck;
 	
-	private int				playerNumber;
-	private String			playerName;
-	private int				playerType;	
-	private int				playerStatus;
-	private ArrayList<Card>	playerHand;
-	private int				playerCardsOnHand;
-	private int				playerPoints;	
-	private PlayerScores	playerScores;
+	private int						playerNumber;
+	private String					playerName;
+	private int						playerType;	
+	private int						playerStatus;
+	private ArrayList<CardModel>	playerHand;
+	private int						playerCardsOnHand;
+	private int						playerPoints;
+	private PlayerScores			playerScores;
 	
 	/*
 	 * Class Constants
@@ -47,7 +47,7 @@ public abstract class Player
 	 * 
 	 */
 	
-	public Player(CardDeck deck, int number, String name, int type, PlayerScores scores)
+	public Player(CardDeckModel deck, int number, String name, int type, PlayerScores scores)
 	{
 		cardDeck			= deck;
 		
@@ -56,7 +56,7 @@ public abstract class Player
 		playerType			= type;
 		
 		playerStatus		= PLAYING;
-		playerHand			= new ArrayList<Card>();
+		playerHand			= new ArrayList<CardModel>();
 		playerCardsOnHand	= 0;
 		playerPoints		= 0;
 		playerScores		= scores;
@@ -67,7 +67,7 @@ public abstract class Player
 	 * 
 	 */
 	
-	public CardDeck getCardDeck()
+	public CardDeckModel getCardDeck()
 	{
 		return cardDeck;
 	}
@@ -87,7 +87,7 @@ public abstract class Player
 		return playerType;
 	}
 	
-	public Card getPlayerHand(int cardNumber)
+	public CardModel getPlayerHand(int cardNumber)
 	{
 		return playerHand.get(cardNumber - 1);
 	}
@@ -127,7 +127,7 @@ public abstract class Player
 	 * 
 	 */
 
-	public void setPlayerHand(Card card)
+	public void setPlayerHand(CardModel card)
 	{
 		playerHand.add(card);
 		
@@ -148,7 +148,7 @@ public abstract class Player
 
 		// Check if this is an Ace
 		
-		if (playerHand.get(playerCardsOnHand - 1).getNumber() == CardDeck.ACE)
+		if (playerHand.get(playerCardsOnHand - 1).getNumber() == CardModel.ACE)
 		{
 			// Check if treating the Ace as 11 points would bust the Player
 			
@@ -192,7 +192,7 @@ public abstract class Player
 		{
 			for (int cardNumber = 0; cardNumber < playerHand.size(); cardNumber++)
 			{
-				if (playerHand.get(cardNumber).getNumber() == CardDeck.ACE)
+				if (playerHand.get(cardNumber).getNumber() == CardModel.ACE)
 				{
 					// Check if this Ace is being treated as 11 points
 					
@@ -248,11 +248,11 @@ public abstract class Player
 	 * 
 	 */
 	
-	public Card initialDeal()
+	public CardModel initialDeal()
 	{
 		// Draw a Card
 		
-		Card card = getCardDeck().deal();
+		CardModel card = getCardDeck().deal();
 		
 		// Add the Card to the Player Hand
 		
@@ -268,5 +268,5 @@ public abstract class Player
 	 * 
 	 */
 	
-	public abstract Card play();
+	public abstract CardModel play();
 }

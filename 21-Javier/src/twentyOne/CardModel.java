@@ -7,7 +7,7 @@ package twentyOne;
  * 
  */
 
-public class Card
+public class CardModel
 {
 	/*
 	 * Class Instance Variables
@@ -23,14 +23,24 @@ public class Card
 	 * Class Constants
 	 * 
 	 */
-
 	
+	public static final int	HEARTS		= 1;
+	public static final int	DIAMONDS	= 2;
+	public static final int	SPADES		= 3;
+	public static final int	CLUBS		= 4;
+	
+	public static final int JOKER		= 0;
+	public static final int	ACE			= 1;
+	public static final int JACK		= 11;
+	public static final int	QUEEN		= 12;
+	public static final int KING		= 13;
+
 	/*
 	 * Constructor Methods
 	 * 
 	 */
 	
-	public Card(int suit, int number)
+	public CardModel(int suit, int number)
 	{
 		cardSuit 	= suit;
 		cardNumber 	= number;
@@ -38,12 +48,12 @@ public class Card
 		validCard 	= true;
 	}
 	
-	public Card()
+	public CardModel()
 	{
 		// Allows the creation of a "blank" Card
 		
-		cardSuit 	= CardDeck.JOKER;
-		cardNumber 	= CardDeck.JOKER;
+		cardSuit 	= CardModel.JOKER;
+		cardNumber 	= CardModel.JOKER;
 		aceAsEleven	= false;
 		validCard 	= false;
 	}
@@ -98,9 +108,9 @@ public class Card
 	 * 
 	 */
 	
-	public boolean compareTo(Card anotherCard)
+	public boolean compareTo(CardModel anotherCard)
 	{
-		return (this.getSuit() == anotherCard.getSuit() && this.getNumber() == anotherCard.getNumber());
+		return (getSuit() == anotherCard.getSuit() && getNumber() == anotherCard.getNumber());
 	}
 	
 	/*
@@ -124,31 +134,31 @@ public class Card
 		
 		switch (cardNumber)
 		{
-			case CardDeck.ACE:
+			case CardModel.ACE:
 			{
 				cardName = "Ace of ";
 				
 				break;
 			}
-			case CardDeck.JACK:
+			case CardModel.JACK:
 			{
 				cardName = "Jack of ";
 				
 				break;
 			}
-			case CardDeck.QUEEN:
+			case CardModel.QUEEN:
 			{
 				cardName = "Queen of ";
 				
 				break;
 			}
-			case CardDeck.KING:
+			case CardModel.KING:
 			{
 				cardName = "King of ";
 				
 				break;
 			}
-			case CardDeck.JOKER:
+			case CardModel.JOKER:
 			{
 				break;
 			}
@@ -169,31 +179,31 @@ public class Card
 		
 		switch (cardSuit)
 		{
-			case CardDeck.DIAMONDS:
+			case CardModel.DIAMONDS:
 			{
 				cardName = cardName + "Diamonds";
 				
 				break;
 			}
-			case CardDeck.SPADES:
+			case CardModel.SPADES:
 			{
 				cardName = cardName + "Spades";
 				
 				break;
 			}
-			case CardDeck.CLUBS:
+			case CardModel.CLUBS:
 			{
 				cardName = cardName + "Clubs";
 				
 				break;
 			}
-			case CardDeck.HEARTS:
+			case CardModel.HEARTS:
 			{
 				cardName = cardName + "Hearts";
 				
 				break;
 			}
-			case CardDeck.JOKER:
+			case CardModel.JOKER:
 			{
 				cardName = "Joker";
 				

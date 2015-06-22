@@ -11,14 +11,14 @@ import javax.swing.JOptionPane;
  * 
  */
 
-public class CardDeck
+public class CardDeckModel
 {
 	/*
 	 * Class Instance Variables
 	 * 
 	 */
 	
-	private Card[][] 		cardDeck;
+	private CardModel[][] 	cardDeck;
 	private int		 		cardsInTheDeck;
 	
 	/*
@@ -28,18 +28,12 @@ public class CardDeck
 	
 	public static final int	SUITS 				= 4;
 	public static final int	CARDS 				= 13;
-	public static final int	HEARTS 				= 1;
-	public static final int	CLUBS				= 2;
-	public static final int	SPADES				= 3;
-	public static final int	DIAMONDS 			= 4;
-	public static final int JOKER				= 0;
-	public static final int ACE					= 1;
-	public static final int JACK				= 11;
-	public static final int QUEEN				= 12;
-	public static final int KING				= 13;
+	private final int		NUMBER_DECK_CARDS 	= SUITS * CARDS;
 	
-	private final int 		CARD_NOT_IN_DECK 	= 0;
-	private final int 		CARD_IN_DECK 		= 1;
+	private final CardModel CARD_NOT_IN_DECK 	= null;
+	private final CardModel	CARD_IN_DECK 		= null;
+	private final int		CARD_NOT_IN			= 0;
+	private final int		CARD_IN				= 1;
 
 	/*
 	 * getCardDeck Getter
@@ -48,7 +42,7 @@ public class CardDeck
 	 * 
 	 */
 	
-	public Card[][] getCardDeck()
+	public CardModel[][] getCardDeck()
 	{
 		return cardDeck;
 	}
@@ -58,7 +52,7 @@ public class CardDeck
 	 * 
 	 */
 	
-	public CardDeck()
+	public CardDeckModel()
 	{
 		// Local Variables
 		
@@ -69,12 +63,19 @@ public class CardDeck
 
 		cardsInTheDeck = 0;
 		
-		// Create a Card Deck instance
+		/*
+		 *  Create a Card Deck instance
+		 *  
+		 *  This Card Deck will be doubly-randomized. The first time here by "shuffling" the generated Cards.
+		 *  The second time by the deal() method "dealing" randomly from the Card Deck.
+		 *  
+		 */
 		
-		cardDeck = new Card[SUITS][CARDS];
-
-		// Create the Cards Generated parallel array (all array elements will be initialized to zero,
-		// meaning "no Card generated".
+		cardDeck = new CardModel[SUITS][CARDS];
+		
+		// Create the Cards Generated parallel array (all array elements will be initialized to zero, "no Card generated").
+		// The Cards Generated array is needed to keep track of the Cards generated and prevent duplicates.
+		// The Card Deck array is needed to "shuffle" the Cards generated.
 		
 		int[][]	cardsGenerated = new int[SUITS][CARDS];
 		
@@ -90,24 +91,24 @@ public class CardDeck
 				
 				cardGenerated = false;
 				
-				while (!cardGenerated && cardsInTheDeck < SUITS * CARDS)
+				while (!cardGenerated && cardsInTheDeck < NUMBER_DECK_CARDS)
 				{
 					// Generated two random numbers. Always request one more number than actually needed.
 					
 					suitNumber = random.nextInt(SUITS);
 					cardNumber = random.nextInt(CARDS);
 					
-					// Check if this "Card" has already been generated
+					// Check if this Card has already been generated
 					
-					if (cardsGenerated[suitNumber][cardNumber] == CARD_NOT_IN_DECK)
+					if (cardsGenerated[suitNumber][cardNumber] == CARD_NOT_IN)
 					{
-						cardDeck[suit][number] = new Card(suitNumber + 1, cardNumber + 1);
+						cardDeck[suit][number] = new CardModel(suitNumber + 1, cardNumber + 1);
 
 						cardsInTheDeck++;
 						
 						// Mark the Card already added to the Card Deck
 						
-						cardsGenerated[suitNumber][cardNumber] = CARD_IN_DECK;
+						cardsGenerated[suitNumber][cardNumber] = CARD_IN;
 
 						cardGenerated = true;
 					}					
@@ -124,7 +125,7 @@ public class CardDeck
 	 * 
 	 */
 	
-	public Card deal()
+	public CardModel deal()
 	{
 		// Local variables
 		
@@ -133,9 +134,8 @@ public class CardDeck
 		int cardNumber 		  = 0;
 		boolean cardDealt 	  = false;
 		
-		// Temporarily create a "blank" Card
-		
-		Card card = new Card();
+		// Create a "blank" Card. If a Card cannot be dealt this "blank" Card will be returned, instead of null.
+		CardModel card = new CardModel();
 
 		if (cardsInTheDeck > 0)
 		{
@@ -147,16 +147,14 @@ public class CardDeck
 				cardNumber = random.nextInt(CARDS);
 				
 				// Check if this Card is in the Card Deck
-				
-				if (cardDeck[suitNumber][cardNumber] != null)
+				if (cardDeck[suitNumber][cardNumber] != CARD_NOT_IN_DECK)
 				{
 					card = cardDeck[suitNumber][cardNumber];
 					
 					cardsInTheDeck--;
 					
-					// Mark the Card already dealt
-					
-					cardDeck[suitNumber][cardNumber] = null;
+					// Mark the Card already dealt					
+					cardDeck[suitNumber][cardNumber] = CARD_NOT_IN_DECK;
 	
 					cardDealt = true;
 				}					
@@ -165,7 +163,8 @@ public class CardDeck
 		else
 		{
 			JOptionPane.showMessageDialog(null, "System Error: Card Deck is empty",
-												"CardDeck: Deal Method", JOptionPane.ERROR_MESSAGE);	
+												"CardDeck: Deal Method", JOptionPane.ERROR_MESSAGE);
+			System.exit(0);
 		}
 		
 		return card;

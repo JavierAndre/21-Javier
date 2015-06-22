@@ -26,7 +26,7 @@ public class AIPlayer extends Player
 	 * 
 	 */
 	
-	public AIPlayer(CardDeck deck, int number, String name, int type, PlayerScores scores)
+	public AIPlayer(CardDeckModel deck, int number, String name, int type, PlayerScores scores)
 	{
 		super(deck, number, name, type, scores);
 	}
@@ -37,11 +37,11 @@ public class AIPlayer extends Player
 	 */
 	
 	@Override
-	public Card play()
+	public CardModel play()
 	{
 		// Create a blank Card. If AI Player stands no Card is dealt and AI PLayer returns a blank Card.
 		
-		Card card = new Card();
+		CardModel card = new CardModel();
 
 		// If the AI Player has 17 or more points, stand
 		

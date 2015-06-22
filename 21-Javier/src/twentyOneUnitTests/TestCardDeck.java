@@ -1,7 +1,7 @@
 package twentyOneUnitTests;
 
-import twentyOne.Card;
-import twentyOne.CardDeck;
+import twentyOne.CardModel;
+import twentyOne.CardDeckModel;
 
 public class TestCardDeck
 {
@@ -10,7 +10,7 @@ public class TestCardDeck
 	 * 
 	 */
 	
-	private CardDeck cardDeck;
+	private CardDeckModel cardDeck;
 	
 	/*
 	 * Constructor
@@ -19,7 +19,7 @@ public class TestCardDeck
 	
 	public TestCardDeck()
 	{
-		cardDeck = new CardDeck();
+		cardDeck = new CardDeckModel();
 	}
 	
 	/*
@@ -32,7 +32,7 @@ public class TestCardDeck
 		// Local variables
 		
 		String displayCard 		= "";
-		Card card 				= null;
+		CardModel card 				= null;
 		int	numberOfJokers		= 0;
 		
 		System.out.println("Test the Card Deck" + "\n");
@@ -123,7 +123,7 @@ public class TestCardDeck
 		return duplicateFound;
 	}
 	
-	private int testCardDeckDuplicates(Card card)
+	private int testCardDeckDuplicates(CardModel card)
 	{
 		// Local variables
 		
@@ -149,11 +149,11 @@ public class TestCardDeck
 		
 		boolean incompleteSuit = false;
 		
-		for (int suit = 0; suit < CardDeck.SUITS; suit++)
+		for (int suit = 0; suit < CardDeckModel.SUITS; suit++)
 		{
-			for (int number = 0; number < CardDeck.CARDS; number++)
+			for (int number = 0; number < CardDeckModel.CARDS; number++)
 			{
-				Card card = new Card(suit + 1, number + 1);
+				CardModel card = new CardModel(suit + 1, number + 1);
 				
 				if (testCardDeckSuit(card))
 				{
@@ -167,7 +167,7 @@ public class TestCardDeck
 		return incompleteSuit;
 	}
 	
-	private boolean testCardDeckSuit(Card card)
+	private boolean testCardDeckSuit(CardModel card)
 	{
 		// Local Variables
 		

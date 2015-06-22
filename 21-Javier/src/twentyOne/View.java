@@ -20,7 +20,7 @@ public class View extends JFrame
 	 * 
 	 */
 	
-	private Game 				game;
+	private Controller 				game;
 	
 	/*
 	 * Class Constants
@@ -36,7 +36,7 @@ public class View extends JFrame
 	 * 
 	 */
 	
-	public View(Game controller)
+	public View(Controller controller)
 	{
 		this.game = controller;
 		
@@ -50,7 +50,7 @@ public class View extends JFrame
 		
 		// Set up the frame title
 		
-		setTitle(GAME_TITLE + " - " + Game.VERSION);
+		setTitle(GAME_TITLE + " - " + Controller.VERSION);
 		
 		// Specify the action of the frame close button
 		
